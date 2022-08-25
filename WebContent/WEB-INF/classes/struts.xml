@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+<!--     指定编码方式为UTF-8 -->
+  <constant name="struts.i18n.encoding" value="UTF-8"></constant>
+  
+  <!--     指定objectFactory 为spring，把action的生命周期管理交给spring进行 -->
+  <constant name="struts.objectFactory" value="spring"/>
+  
+  <!--     使用basicstruts，与CategoryAction 中的相对应basicstruts相对应。 -->
+  <package name="basicstruts" extends="struts-default">
+  
+  <interceptors>
+  <interceptor name="authorityInterceptor" class="com.how2java.tmall.interceptor.AuthInterceptor">
+  </interceptor>
+   <interceptor name="categoryNamesBelowSearchInterceptor" class="com.how2java.tmall.interceptor.CategoryNamesBelowSearchInterceptor">
+  </interceptor>
+  <interceptor name="cartTotalItemNumberInterceptor" class="com.how2java.tmall.interceptor.CartTotalItemNumberInterceptor">
+  </interceptor>
+<!--   拦截器 -->
+  <interceptor-stack name="auth-default">
+  <interceptor-ref name="authorityInterceptor" />
+  <interceptor-ref name="categoryNamesBelowSearchInterceptor" />
+  <interceptor-ref name="cartTotalItemNumberInterceptor" />
+  <interceptor-ref name="defaultStack" />
+  </interceptor-stack>
+  </interceptors>
+ 
+ <default-interceptor-ref name="auth-default"></default-interceptor-ref>       
+ </package>
+</struts>

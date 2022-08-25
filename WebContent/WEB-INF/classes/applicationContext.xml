@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!-- beans后面这一对的代码意思是引入相关schema约束的名称空间， http://www...后面的一堆也就是要找的schema约束 -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+   http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+   http://www.springframework.org/schema/tx
+   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+   http://www.springframework.org/schema/context     
+   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+   
+<!--    表示告诉Spring要用注解的方式进行配置 -->
+   <context:annotation-config />
+<!--    这里表示扫描所有包名为com.how2java的文件 -->
+   <context:component-scan base-package="com.how2java"/>
+<!--    配置事务管理，用于进行注解扫描 -->
+   <tx:annotation-driven transaction-manager="transactionManager"/>
+   
+<!--    Spring配置文件通过bean标签管理对象（自定义的类，Spring框架的类），交给IOC容器。 -->
+<!--    IoC：即控制反转。举例来说，在之前的操作中，比方说有一个类，我们想要调用类里面的方法（不是静态方法），就要创建该类的对象， -->
+<!--    使用对象调用方法来实现。但对于Spring来说，Spring创建对象的过程，不是在代码里面实现的，而是交给Spring来进行配置实现的。 -->
+<!-- prototype(多例，每次从IOC容器中获取对象时，才会创建一个实例。容器不负责销毁对象，由GC销毁) -->
+<!--   id：对象在IoC容器唯一的名称 -->
+<!--     class：管理类的全路径(底层通过反射创建对象) -->
+
+<!--    此处的name="sf"对应DAOImpl中的@Resource(name = "sf")，以及下面 配置事务管理器的ref-->
+   <bean name="sf" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+<!--    这里要使用ref来注入另一个对象 -->
+   <property name="dataSource" ref="ds"/>
+   
+   <!-- 注解扫描 -->
+   <property name="packagesToScan">
+   <list>
+   <value>com.how2java.*</value>
+   </list>
+   </property>
+   
+   <property name="schemaUpdate">
+   <value>true</value>
+   </property>
+
+<!-- 	配置方言，这里表示使用mysql的语言 -->
+<!-- 	其中hbm2ddl.auto=update就表示是自动更新表结构，不需要手段创建的变更。 -->
+   <property name="hibernateProperties">
+   <value>
+   hibernate.dialect=org.hibernate.dialect.MySQLDialect
+   hibernate.show_sql=false
+   hbm2ddl.auto=update
+   </value>
+   </property>
+   </bean>
+<!--    配置数据据的链接，指定数据库的名称以及账号密码 -->
+<!-- 此地的ds对应38行的ref="ds" -->
+   <bean name="ds" 
+   class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+   <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+   <property name="url" value="jdbc:mysql://localhost:3306/tmall_ssh?characterEncoding=UTF-8" />
+   <property name="username" value="root" />
+   <property name="password" value="admin" />
+  </bean>
+  
+   <!-- 配置事务管理器（声明式的事务） --> <!-- 管理Hibernate的SessionFactory -->
+<!--    此处的id对应上面配置事务管理的transaction-manager，并指定管理的路径，ref来注入另一个对象sf -->
+   <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+   <property name="sessionFactory" ref="sf"></property>
+   </bean>
+   
+</beans>

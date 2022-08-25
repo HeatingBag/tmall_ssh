@@ -1,0 +1,51 @@
+<web-app>
+
+
+<!-- 此处的filter-name:struts2对应下面filter-mapping中的struts2，这里两个联合起来的意思就是，所有的网址 -->
+<!-- 都会经过org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter这个过滤器 -->
+
+<filter>
+<filter-name>struts2</filter-name>
+<filter-class>
+org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
+</filter-class>
+</filter>
+
+<!-- url是统一资源定位符，是互联网上标准资源的地址，那么url-pattern意思也就是任何为“/*”模式的网址，都会被要求跳转到名为struts2的过滤器 -->
+<filter-mapping>
+<filter-name>struts2</filter-name>
+<dispatcher>FORWARD</dispatcher>
+<dispatcher>REQUEST</dispatcher>
+<url-pattern>/*</url-pattern>
+</filter-mapping>
+
+
+<!-- 同理，此处的encodingFilter对应下面的过滤器映射的encodingFilter，意思是所有的网址，所有的请求都进行UTF-8编码 -->
+<filter>
+<filter-name>encodingFilter</filter-name>
+<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+<init-param>
+<param-name>encoding</param-name>
+<param-value>UTF-8</param-value>
+</init-param>
+</filter>
+
+<filter-mapping>
+<filter-name>encodingFilter</filter-name>
+<url-pattern>/*</url-pattern>
+</filter-mapping>
+
+
+<!-- 按照单词的意思理解：上下文的参数，此处的意思是指定上下文配置位置为applicationContext.xml -->
+<!-- 综合起来的理解就是：指定Spring配置文件的位置在classpath:applicationContext.xml -->
+<context-param>
+<param-name>contextConfigLocation</param-name>
+<param-value>classpath:applicationContext.xml</param-value>
+</context-param>
+
+<!-- 指定Context监听器，该监听器在tomcat启动的时候就会执行，用于扫描WEB-INF/lib目录下是否有 struts2-spring-plugin-2.2.3.1.jar -->
+<listener>
+<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+
+</web-app>
